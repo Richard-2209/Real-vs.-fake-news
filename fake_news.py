@@ -1,3 +1,5 @@
+# To install dependencies, run (in this folder):
+#   pip install -r requirements.txt
 #%%
 import kagglehub
 
