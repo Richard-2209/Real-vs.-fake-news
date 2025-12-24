@@ -92,39 +92,71 @@ print(f'The vocabulary consists of {vocab_size}')
 # Improved model: Embedding + LSTM + Dense layers with Dropout
 from tensorflow.keras.layers import Embedding, SpatialDropout1D, LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
+import os
 
-model = tf.keras.Sequential([
-    Embedding(input_dim=vocab_size, output_dim=128, input_length=745),
-    SpatialDropout1D(0.2),
-    LSTM(128, return_sequences=False),
-    Dropout(0.3),
-    Dense(64, activation='relu'),
-    Dropout(0.3),
-    Dense(1, activation='sigmoid')
-])
+model_path = "fake_news_model.keras"
 
-model.compile(
-    loss='binary_crossentropy',
-    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
-    metrics=['accuracy']
-)
+# Wenn ein gespeichertes Modell existiert, lade es und überspringe das Training
+if os.path.exists(model_path):
+    print(f"Lade vorhandenes Modell aus {model_path} ...")
+    model = tf.keras.models.load_model(model_path)
+else:
+    print("Kein gespeichertes Modell gefunden – Modell wird trainiert.")
 
-model.summary()
+    model = tf.keras.Sequential([
+        Embedding(input_dim=vocab_size, output_dim=128, input_length=745),
+        SpatialDropout1D(0.2),
+        LSTM(128, return_sequences=False),
+        Dropout(0.3),
+        Dense(64, activation='relu'),
+        Dropout(0.3),
+        Dense(1, activation='sigmoid')
+    ])
 
-early_stopping = EarlyStopping(
-    monitor='val_loss',
-    patience=2,
-    restore_best_weights=True
-)
+    model.compile(
+        loss='binary_crossentropy',
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+        metrics=['accuracy']
+    )
 
-history = model.fit(
-    X_train,
-    y_train,
-    epochs=10,
-    batch_size=128,
-    validation_split=0.2,
-    callbacks=[early_stopping]
-)
+    model.summary()
+
+    early_stopping = EarlyStopping(
+        monitor='val_loss',
+        patience=5,
+        restore_best_weights=True
+    )
+
+    history = model.fit(
+        X_train,
+        y_train,
+        epochs=10,
+        batch_size=128,
+        validation_split=0.2,
+        callbacks=[early_stopping]
+    )
+
+    # Modell nach dem Training speichern
+    model.save(model_path)
+    print(f"Modell wurde in {model_path} gespeichert.")
+
+# summarize history for loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+# Plot the training and validation error of the CNN over time.
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
 
 print('Test evaluation:')
 model.evaluate(X_test, y_test)
