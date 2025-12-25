@@ -101,16 +101,6 @@ if os.path.exists(model_path):
     print(f"Lade vorhandenes Modell aus {model_path} ...")
     model = tf.keras.models.load_model(model_path)
 
-    # Kurzes Nachtrainieren, damit immer eine History vorhanden ist
-    history = model.fit(
-        X_train,
-        y_train,
-        epochs=1,              # nur 1 Epoche
-        batch_size=128,
-        validation_split=0.2,
-        # callbacks=[early_stopping]
-    )
-
 else:
     print("Kein gespeichertes Modell gefunden – Modell wird trainiert.")
 
@@ -148,26 +138,26 @@ else:
         # callbacks=[early_stopping]
     )
 
+    # Ab hier gibt es IMMER eine history, also immer plotten
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
     # Modell nach dem Training speichern
     model.save(model_path)
     print(f"Modell wurde in {model_path} gespeichert.")
-
-# Ab hier gibt es IMMER eine history, also immer plotten
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
-
-plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
 
 print('Test evaluation:')
 model.evaluate(X_test, y_test)
