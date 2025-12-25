@@ -94,7 +94,7 @@ from tensorflow.keras.layers import Embedding, SpatialDropout1D, LSTM, Dense, Dr
 # from tensorflow.keras.callbacks import EarlyStopping  # Early Stopping vorerst deaktiviert
 import os
 
-model_path = "fake_news_model_v3.keras"
+model_path = "fake_news_model.keras"
 
 # Wenn ein gespeichertes Modell existiert, lade es
 if os.path.exists(model_path):
