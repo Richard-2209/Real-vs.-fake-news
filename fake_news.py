@@ -10,7 +10,7 @@ print("Path to dataset files:", path)
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt # plottinng in python library
+import matplotlib.pyplot as plt # plotting in python library
 from sklearn.preprocessing import LabelEncoder # for label encoding
 from sklearn.model_selection import train_test_split # to split our dataset in training and test set
 import tensorflow as tf
