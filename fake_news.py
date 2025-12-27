@@ -118,7 +118,7 @@ model.compile(
 history = model.fit(
     X_train,
     y_train,
-    epochs=13,
+    epochs=7,
     batch_size=128,
     validation_split=0.2,
     # callbacks=[early_stopping],
